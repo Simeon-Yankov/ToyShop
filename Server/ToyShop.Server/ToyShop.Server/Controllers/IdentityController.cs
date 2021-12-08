@@ -51,7 +51,7 @@ namespace ToyShop.Server.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route(nameof(Login))]
-        public async Task<ActionResult<string>> Login(LoginRequestModel model)
+        public async Task<ActionResult<LoginResponseModel>> Login(LoginRequestModel model)
         {
             var user = await this.userManager.FindByNameAsync(model.UserName);
 
@@ -69,7 +69,10 @@ namespace ToyShop.Server.Controllers
 
             var token = this.identity.GenerateJwtToken(user.Id, model.UserName, this.appSettings.Secret);
 
-            return token;
+            return new LoginResponseModel
+            {
+                Token = token
+            };
         }
     }
 }

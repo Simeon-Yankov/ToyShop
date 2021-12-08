@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+
+import { Route, Routes } from "react-router-dom";
+import { Container, Navbar, Nav } from 'react-bootstrap';
+import Header from "./components/layout/Header";
+import Body from "./components/layout/Body";
+import Footer from "./components/layout/Footer";
+import Anycomponent from './components/Anycomponent';
+import Home from './components/Home';
+import Login from './components/Login';
+import Register from './components/Register';
+
+// function parseCookies() {
+//   return document.cookie.split('; ').reduce((acc, cookie) => {
+//     const []
+//   })
+// }
 
 function App() {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Toy Shop Site
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Header />
+      <Container>
+        <Body/>
+        <Anycomponent />
+      </Container>
+      <Footer />
+    </>
   );
 }
 
