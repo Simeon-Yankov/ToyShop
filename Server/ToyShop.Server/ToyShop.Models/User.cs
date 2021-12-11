@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
-
-using static ToyShop.Common.GlobalConstants.User;
+using System.Collections.Generic;
 
 namespace ToyShop.Models
 {
     public class User : IdentityUser
     {
+        public User() 
+            => this.Toys = new List<Toy>();
+
+        public ICollection<Toy> Toys { get; init; }
     }
 }

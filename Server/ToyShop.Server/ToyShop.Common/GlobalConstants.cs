@@ -6,5 +6,10 @@
         {
             public const int UsernameMaxLength = 20;
         }
+
+        public class Toy
+        {
+            public const int DescriptionMaxLength = 2000;
+        }
     }
 }

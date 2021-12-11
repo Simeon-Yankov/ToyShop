@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ToyShop.Data;
 
 namespace ToyShop.Data.Migrations
 {
     [DbContext(typeof(ToyShopDbContext))]
-    partial class ToyShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211211033722_ToyTable")]
+    partial class ToyTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,7 +159,7 @@ namespace ToyShop.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ToyId")
+                    b.Property<int?>("ToyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Url")
@@ -168,7 +170,7 @@ namespace ToyShop.Data.Migrations
 
                     b.HasIndex("ToyId");
 
-                    b.ToTable("ImagesUrls");
+                    b.ToTable("ImageUrls");
                 });
 
             modelBuilder.Entity("ToyShop.Models.Toy", b =>
@@ -312,13 +314,9 @@ namespace ToyShop.Data.Migrations
 
             modelBuilder.Entity("ToyShop.Models.ImageUrl", b =>
                 {
-                    b.HasOne("ToyShop.Models.Toy", "Toy")
-                        .WithMany("ImagesUrl")
-                        .HasForeignKey("ToyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Toy");
+                    b.HasOne("ToyShop.Models.Toy", null)
+                        .WithMany("ImageUrls")
+                        .HasForeignKey("ToyId");
                 });
 
             modelBuilder.Entity("ToyShop.Models.Toy", b =>
@@ -334,7 +332,7 @@ namespace ToyShop.Data.Migrations
 
             modelBuilder.Entity("ToyShop.Models.Toy", b =>
                 {
-                    b.Navigation("ImagesUrl");
+                    b.Navigation("ImageUrls");
                 });
 
             modelBuilder.Entity("ToyShop.Models.User", b =>

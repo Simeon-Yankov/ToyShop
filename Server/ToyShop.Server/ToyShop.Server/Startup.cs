@@ -14,6 +14,8 @@ using ToyShop.Models;
 using ToyShop.Server.Infrustructure;
 using ToyShop.Services.Identity;
 using ToyShop.Services.Identity.Contracts;
+using ToyShop.Services.Toys;
+using ToyShop.Services.Toys.Contracts;
 
 namespace ToyShop.Server
 {
@@ -72,6 +74,7 @@ namespace ToyShop.Server
             services.AddControllers();
 
             services.AddTransient<IIdentityService, IdentityService>();
+            services.AddTransient<IToyService, ToyService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
