@@ -1,16 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using ToyShop.Data;
 using ToyShop.Server.Infrastructure.Extensions;
 using ToyShop.Server.Infrustructure;
-using ToyShop.Services.Identity;
-using ToyShop.Services.Identity.Contracts;
-using ToyShop.Services.Toys;
-using ToyShop.Services.Toys.Contracts;
 
 namespace ToyShop.Server
 {
@@ -22,25 +16,24 @@ namespace ToyShop.Server
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {
-            var appSettings = services.GetAppSettings(this.Configuration);
-
-            services
-                .AddDbContext<ToyShopDbContext>(options => options
-                    .UseSqlServer(this.Configuration.GetDefaultConnection()))
+            => services
+                .AddDatabase(this.Configuration)
                 .AddIdentity()
                 .AddDatabaseDeveloperPageExceptionFilter()
-                .AddJwtAuthentication(appSettings)
+                .AddJwtAuthentication(services.GetAppSettings(this.Configuration))
+                .AddApplicationServices()
+                .AddSwagger()
                 .AddControllers();
 
-            services
-                .AddTransient<IIdentityService, IdentityService>()
-                .AddTransient<IToyService, ToyService>();
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app
+                .UseSwagger()
+                .UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "My ToyShop API");
+                    options.RoutePrefix = string.Empty;
+                })
                 .PrepareDateBase()
                 .UseRouting()
                 .UseCors(options => options

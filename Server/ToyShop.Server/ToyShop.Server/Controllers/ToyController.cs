@@ -23,7 +23,7 @@ namespace ToyShop.Server.Controllers
 
             var toyId = await toyService.Create(userId, model.Description, model.ImageUrls);
 
-            return Created(nameof(Create), toyId);
+            return Created(nameof(this.Create), toyId);
         }
     }
 }

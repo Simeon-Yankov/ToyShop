@@ -7,6 +7,7 @@ namespace ToyShop.Server.Controllers
     {
         [AllowAnonymous]
         [Authorize]
+        [HttpGet]
         public IActionResult Get()
         {
             return Ok("Works");
