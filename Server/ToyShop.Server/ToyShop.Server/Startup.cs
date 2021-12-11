@@ -1,16 +1,11 @@
-using System.Text;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 
 using ToyShop.Data;
-using ToyShop.Models;
+using ToyShop.Server.Infrastructure.Extensions;
 using ToyShop.Server.Infrustructure;
 using ToyShop.Services.Identity;
 using ToyShop.Services.Identity.Contracts;
@@ -28,73 +23,36 @@ namespace ToyShop.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var appSettings = services.GetAppSettings(this.Configuration);
+
             services
                 .AddDbContext<ToyShopDbContext>(options => options
-                    .UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
-
-            services.AddDatabaseDeveloperPageExceptionFilter();
-
-            services
-                .AddIdentity<User, IdentityRole>(options =>
-                {
-                    options.Password.RequiredLength = 6;
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-
-                })
-                .AddEntityFrameworkStores<ToyShopDbContext>();
-
-            var applicationSettingsConfiguration = this.Configuration.GetSection("ApplicationSettingsConfiguration");
-                services.Configure<AppSettings>(applicationSettingsConfiguration);
-
-            var appSettings = applicationSettingsConfiguration.Get<AppSettings>();
-            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+                    .UseSqlServer(this.Configuration.GetDefaultConnection()))
+                .AddIdentity()
+                .AddDatabaseDeveloperPageExceptionFilter()
+                .AddJwtAuthentication(appSettings)
+                .AddControllers();
 
             services
-                .AddAuthentication(x =>
-                {
-                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(x =>
-                {
-                    x.RequireHttpsMetadata = false;
-                    x.SaveToken = false;
-                    x.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                });
-            
-            services.AddControllers();
-
-            services.AddTransient<IIdentityService, IdentityService>();
-            services.AddTransient<IToyService, ToyService>();
+                .AddTransient<IIdentityService, IdentityService>()
+                .AddTransient<IToyService, ToyService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.PrepareDateBase();
-
-            app.UseRouting();
-
-            app.UseCors(options => options
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app
+                .PrepareDateBase()
+                .UseRouting()
+                .UseCors(options => options
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader())
+                .UseAuthentication()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
         }
     }
 }

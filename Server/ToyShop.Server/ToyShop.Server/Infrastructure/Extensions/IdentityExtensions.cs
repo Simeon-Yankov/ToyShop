@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace ToyShop.Server.Infrastructure.Extensions
 {
-    public static class IdentityExtension
+    public static class IdentityExtensions
     {
         public static string Id(this ClaimsPrincipal user) 
             => user
