@@ -1,0 +1,7 @@
+﻿namespace ToyShop.Server.Infrastructure
+{
+    public class WebConstants
+    {
+        public const string Id = "{id}";
+    }
+}

@@ -6,6 +6,8 @@ using ToyShop.Server.Infrastructure.Extensions;
 using ToyShop.Server.Models.Toy;
 using ToyShop.Services.Toys.Contracts;
 
+using static ToyShop.Server.Infrastructure.WebConstants;
+
 namespace ToyShop.Server.Controllers
 {
     public class ToyController : ApiController
@@ -57,6 +59,20 @@ namespace ToyShop.Server.Controllers
                 userId);
 
             if (!isUpdated)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route(Id)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var isDeleted = await this.toyService.DeleteHard(id, this.User.Id());
+
+            if (!isDeleted)
             {
                 return BadRequest();
             }

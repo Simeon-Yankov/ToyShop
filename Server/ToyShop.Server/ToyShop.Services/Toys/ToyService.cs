@@ -52,6 +52,27 @@ namespace ToyShop.Services.Toys
             return toy.Id;
         }
 
+        public async Task<bool> DeleteHard(int id, string userId)
+        {
+            var toy = await GetByIdAndUserId(id, userId);
+
+            if (toy is null)
+            {
+                return false;
+            }
+
+            var user = await this.data
+                .Users
+                .FirstOrDefaultAsync(t => t.Id == userId);
+
+            user.Toys.Remove(toy);
+            this.data.Toys.Remove(toy);
+
+            await this.data.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<ToyDetailsServiceModel> Details(int id)
             => await this.data
                 .Toys
@@ -66,9 +87,7 @@ namespace ToyShop.Services.Toys
 
         public async Task<bool> Update(int id, string description, ICollection<string> urls, string userId)
         {
-            var toy = await this.data
-                .Toys
-                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+            var toy = await GetByIdAndUserId(id, userId);
 
             if (toy is null)
             {
@@ -92,6 +111,12 @@ namespace ToyShop.Services.Toys
 
             return true;
         }
+
+        private async Task<Toy> GetByIdAndUserId(int id, string userId)
+            => await this.data
+                .Toys
+                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
 
         private static void PopulateListImagesUrls(List<string> imagesUrls, List<ImageUrl> listImgsUrls)
         {

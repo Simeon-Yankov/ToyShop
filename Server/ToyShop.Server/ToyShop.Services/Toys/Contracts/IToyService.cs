@@ -11,6 +11,8 @@ namespace ToyShop.Services.Toys.Contracts
 
         Task<int> Create(string userId, string description, List<string> imagesUrls);
 
+        Task<bool> DeleteHard(int id, string userId);
+
         Task<ToyDetailsServiceModel> Details(int id);
 
         Task<bool> Update(int id, string description, ICollection<string> urls, string userId);
