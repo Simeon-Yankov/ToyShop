@@ -27,12 +27,41 @@ namespace ToyShop.Server.Controllers
         }
 
         [HttpGet]
+        [Route(nameof(Details))]
+        public async Task<IActionResult> Details(int id)
+        {
+            var toyDetails = await this.toyService.Details(id);
+
+            return toyDetails is null ? NotFound() : Ok(toyDetails);
+        }
+
+        [HttpGet]
         [Route(nameof(Mine))]
         public async Task<IActionResult> Mine()
         {
             var userId = this.User.Id();
 
             return Ok(await this.toyService.ByUser(userId));
+        }
+
+        [HttpPut]
+        [Route(nameof(Update))]
+        public async Task<IActionResult> Update(UpdateRequestModel model)
+        {
+            var userId = this.User.Id();
+
+            var isUpdated = await this.toyService.Update(
+                model.Id,
+                model.Description,
+                model.ImagesUrl,
+                userId);
+
+            if (!isUpdated)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
         }
     }
 }

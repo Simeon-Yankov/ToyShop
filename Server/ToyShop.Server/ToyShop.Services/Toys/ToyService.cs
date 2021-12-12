@@ -18,6 +18,21 @@ namespace ToyShop.Services.Toys
         public ToyService(ToyShopDbContext data)
             => this.data = data;
 
+        public async Task<IEnumerable<ToyServiceModel>> ByUser(string userId)
+            => await this.data
+                .Toys
+                .Where(t => t.UserId == userId)
+                .Select(t => new ToyServiceModel
+                {
+                    Id = t.Id,
+                    Description = t.Description,
+                    ImageUrls = t
+                                    .ImagesUrl
+                                    .Select(t => t.Url)
+                                    .ToList()
+                })
+                .ToListAsync();
+
         public async Task<int> Create(string userId, string description, List<string> imagesUrls)
         {
             var imagesUrl = new List<ImageUrl>();
@@ -37,19 +52,46 @@ namespace ToyShop.Services.Toys
             return toy.Id;
         }
 
-        public async Task<IEnumerable<ToyServiceModel>> ByUser(string userId) 
+        public async Task<ToyDetailsServiceModel> Details(int id)
             => await this.data
                 .Toys
-                .Where(t => t.UserId == userId)
-                .Select(t => new ToyServiceModel
+                .Where(t => t.Id == id)
+                .Select(t => new ToyDetailsServiceModel
                 {
                     Description = t.Description,
-                    ImageUrls = t
-                                    .ImagesUrl
-                                    .Select(t => t.Url)
-                                    .ToList()
+                    ImagesUrl = t.ImagesUrl.Select(iu => iu.Url).ToList(),
+                    UserId = t.UserId
                 })
-                .ToListAsync();
+                .FirstOrDefaultAsync();
+
+        public async Task<bool> Update(int id, string description, ICollection<string> urls, string userId)
+        {
+            var toy = await this.data
+                .Toys
+                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
+            if (toy is null)
+            {
+                return false;
+            }
+
+            toy.Description = description;
+            toy.ImagesUrl.Clear();
+
+            foreach (var url in urls)
+            {
+                toy
+                    .ImagesUrl
+                    .Add(new ImageUrl
+                    {
+                        Url = url,
+                    });
+            }
+
+            await this.data.SaveChangesAsync();
+
+            return true;
+        }
 
         private static void PopulateListImagesUrls(List<string> imagesUrls, List<ImageUrl> listImgsUrls)
         {
