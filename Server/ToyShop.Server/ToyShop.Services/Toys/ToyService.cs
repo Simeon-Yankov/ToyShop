@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.EntityFrameworkCore;
 
 using ToyShop.Data;
 using ToyShop.Models;
 using ToyShop.Services.Toys.Contracts;
+using ToyShop.Services.Toys.Models;
 
 namespace ToyShop.Services.Toys
 {
@@ -32,6 +36,20 @@ namespace ToyShop.Services.Toys
 
             return toy.Id;
         }
+
+        public async Task<IEnumerable<ToyServiceModel>> ByUser(string userId) 
+            => await this.data
+                .Toys
+                .Where(t => t.UserId == userId)
+                .Select(t => new ToyServiceModel
+                {
+                    Description = t.Description,
+                    ImageUrls = t
+                                    .ImagesUrl
+                                    .Select(t => t.Url)
+                                    .ToList()
+                })
+                .ToListAsync();
 
         private static void PopulateListImagesUrls(List<string> imagesUrls, List<ImageUrl> listImgsUrls)
         {

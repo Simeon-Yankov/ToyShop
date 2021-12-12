@@ -25,5 +25,14 @@ namespace ToyShop.Server.Controllers
 
             return Created(nameof(this.Create), toyId);
         }
+
+        [HttpGet]
+        [Route(nameof(Mine))]
+        public async Task<IActionResult> Mine()
+        {
+            var userId = this.User.Id();
+
+            return Ok(await this.toyService.ByUser(userId));
+        }
     }
 }

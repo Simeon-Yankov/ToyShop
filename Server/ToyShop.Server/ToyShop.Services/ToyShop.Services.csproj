@@ -8,8 +8,4 @@
     <ProjectReference Include="..\ToyShop.Data\ToyShop.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Toys\Models\" />
-  </ItemGroup>
-
 </Project>
