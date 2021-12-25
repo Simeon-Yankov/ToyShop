@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
+using ToyShop.Models.Base;
+
 using static ToyShop.Common.GlobalConstants.Toy;
 
 namespace ToyShop.Models
 {
-    public class Toy
+    public class Toy : DeletableEntity
     {
         public Toy() 
             => this.ImagesUrl = new List<ImageUrl>();

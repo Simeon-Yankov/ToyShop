@@ -2,28 +2,33 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-using ToyShop.Server.Infrastructure.Extensions;
+using ToyShop.Common.Infrastructure.Services.Users.Contracts;
 using ToyShop.Server.Models.Toy;
 using ToyShop.Services.Toys.Contracts;
 
 using static ToyShop.Server.Infrastructure.WebConstants;
+using static ToyShop.Server.Infrastructure.WebConstants.Toy;
 
 namespace ToyShop.Server.Controllers
 {
     public class ToyController : ApiController
     {
-        private readonly IToyService toyService;
+        private readonly IToyService toys;
+        private readonly ICurrentUserService currentUser;
 
-        public ToyController(IToyService toyService) 
-            => this.toyService = toyService;
+        public ToyController(IToyService toys, ICurrentUserService currentUser)
+        {
+            this.toys = toys;
+            this.currentUser = currentUser;
+        }
 
         [HttpPost]
         [Route(nameof(Create))]
         public async Task<IActionResult> Create(CreateRequestModel model)
         {
-            var userId = this.User.Id();
+            var userId = this.currentUser.GetId();
 
-            var toyId = await toyService.Create(userId, model.Description, model.ImageUrls);
+            var toyId = await toys.Create(userId, model.Description, model.ImageUrls);
 
             return Created(nameof(this.Create), toyId);
         }
@@ -32,7 +37,7 @@ namespace ToyShop.Server.Controllers
         [Route(nameof(Details))]
         public async Task<IActionResult> Details(int id)
         {
-            var toyDetails = await this.toyService.Details(id);
+            var toyDetails = await this.toys.Details(id);
 
             return toyDetails is null ? NotFound() : Ok(toyDetails);
         }
@@ -41,18 +46,18 @@ namespace ToyShop.Server.Controllers
         [Route(nameof(Mine))]
         public async Task<IActionResult> Mine()
         {
-            var userId = this.User.Id();
+            var userId = this.currentUser.GetId();
 
-            return Ok(await this.toyService.ByUser(userId));
+            return Ok(await this.toys.ByUser(userId));
         }
 
         [HttpPut]
         [Route(nameof(Update))]
         public async Task<IActionResult> Update(UpdateRequestModel model)
         {
-            var userId = this.User.Id();
+            var userId = this.currentUser.GetId();
 
-            var isUpdated = await this.toyService.Update(
+            var isUpdated = await this.toys.Update(
                 model.Id,
                 model.Description,
                 model.ImagesUrl,
@@ -70,11 +75,11 @@ namespace ToyShop.Server.Controllers
         [Route(Id)]
         public async Task<IActionResult> Delete(int id)
         {
-            var isDeleted = await this.toyService.DeleteHard(id, this.User.Id());
+            var isDeleted = await this.toys.DeleteHard(id, this.currentUser.GetId());
 
             if (!isDeleted)
             {
-                return BadRequest();
+                return BadRequest(NotFoundMessge);
             }
 
             return Ok();

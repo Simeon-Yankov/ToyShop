@@ -3,7 +3,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+
 using Swashbuckle.AspNetCore.SwaggerUI;
+
 using ToyShop.Data;
 
 namespace ToyShop.Server.Infrustructure.Extensions

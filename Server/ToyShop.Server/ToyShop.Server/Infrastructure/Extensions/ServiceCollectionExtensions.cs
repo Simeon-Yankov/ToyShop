@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -8,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
+using ToyShop.Common.Infrastructure.Services.Users;
+using ToyShop.Common.Infrastructure.Services.Users.Contracts;
 using ToyShop.Data;
 using ToyShop.Models;
 using ToyShop.Services.Identity;
@@ -84,6 +86,7 @@ namespace ToyShop.Server.Infrastructure.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
             => services
                 .AddTransient<IIdentityService, IdentityService>()
+                .AddScoped<ICurrentUserService, CurrentUserService>()
                 .AddTransient<IToyService, ToyService>();
 
         public static IServiceCollection AddSwagger(this IServiceCollection services)

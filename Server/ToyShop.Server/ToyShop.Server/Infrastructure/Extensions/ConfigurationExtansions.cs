@@ -6,7 +6,5 @@ namespace ToyShop.Server.Infrastructure.Extensions
     {
         public static string GetDefaultConnection(this IConfiguration configuration) 
             => configuration.GetConnectionString("DefaultConnection");
-
-        
     }
 }

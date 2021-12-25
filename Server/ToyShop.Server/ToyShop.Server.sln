@@ -11,15 +11,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{AB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{21C38285-CE61-4311-9263-A88543FFFB24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyShop.Data", "ToyShop.Data\ToyShop.Data.csproj", "{1A280427-CDC0-4231-9148-DEE42D6567E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyShop.Data", "ToyShop.Data\ToyShop.Data.csproj", "{1A280427-CDC0-4231-9148-DEE42D6567E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyShop.Models", "ToyShop.Models\ToyShop.Models.csproj", "{48B85AC5-BC26-480D-B06A-9F6893E21E4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyShop.Models", "ToyShop.Models\ToyShop.Models.csproj", "{48B85AC5-BC26-480D-B06A-9F6893E21E4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyShop.Services", "ToyShop.Services\ToyShop.Services.csproj", "{C0E697B5-1C8E-400E-B5F0-949041426C8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyShop.Services", "ToyShop.Services\ToyShop.Services.csproj", "{C0E697B5-1C8E-400E-B5F0-949041426C8F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{443B0EE4-B16E-415C-B742-BE988AA90C8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyShop.Common", "ToyShop.Common\ToyShop.Common.csproj", "{92DFDA2F-AC5E-4018-B30A-B0D44BE93D4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyShop.Common", "ToyShop.Common\ToyShop.Common.csproj", "{92DFDA2F-AC5E-4018-B30A-B0D44BE93D4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

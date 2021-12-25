@@ -65,7 +65,6 @@ namespace ToyShop.Services.Toys
                 .Users
                 .FirstOrDefaultAsync(t => t.Id == userId);
 
-            user.Toys.Remove(toy);
             this.data.Toys.Remove(toy);
 
             await this.data.SaveChangesAsync();
