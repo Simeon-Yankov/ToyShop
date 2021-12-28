@@ -18,21 +18,6 @@ namespace ToyShop.Services.Toys
         public ToyService(ToyShopDbContext data)
             => this.data = data;
 
-        public async Task<IEnumerable<ToyServiceModel>> ByUser(string userId)
-            => await this.data
-                .Toys
-                .Where(t => t.UserId == userId)
-                .Select(t => new ToyServiceModel
-                {
-                    Id = t.Id,
-                    Description = t.Description,
-                    ImageUrls = t
-                                    .ImagesUrl
-                                    .Select(t => t.Url)
-                                    .ToList()
-                })
-                .ToListAsync();
-
         public async Task<int> Create(string userId, string description, List<string> imagesUrls)
         {
             var imagesUrl = new List<ImageUrl>();
@@ -52,45 +37,13 @@ namespace ToyShop.Services.Toys
             return toy.Id;
         }
 
-        public async Task<bool> DeleteHard(int id, string userId)
+        public async Task<Result> Update(int id, string description, ICollection<string> urls, string userId)
         {
             var toy = await GetByIdAndUserId(id, userId);
 
             if (toy is null)
             {
-                return false;
-            }
-
-            var user = await this.data
-                .Users
-                .FirstOrDefaultAsync(t => t.Id == userId);
-
-            this.data.Toys.Remove(toy);
-
-            await this.data.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<ToyDetailsServiceModel> Details(int id)
-            => await this.data
-                .Toys
-                .Where(t => t.Id == id)
-                .Select(t => new ToyDetailsServiceModel
-                {
-                    Description = t.Description,
-                    ImagesUrl = t.ImagesUrl.Select(iu => iu.Url).ToList(),
-                    UserId = t.UserId
-                })
-                .FirstOrDefaultAsync();
-
-        public async Task<bool> Update(int id, string description, ICollection<string> urls, string userId)
-        {
-            var toy = await GetByIdAndUserId(id, userId);
-
-            if (toy is null)
-            {
-                return false;
+                return "There is no toy with the given id";
             }
 
             toy.Description = description;
@@ -105,6 +58,52 @@ namespace ToyShop.Services.Toys
                         Url = url,
                     });
             }
+
+            await this.data.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<ToyDetailsServiceModel> Details(int id)
+            => await this.data
+                .Toys
+                .AsNoTracking()
+                .Where(t => t.Id == id)
+                .Select(t => new ToyDetailsServiceModel
+                {
+                    Description = t.Description,
+                    ImagesUrl = t.ImagesUrl.Select(iu => iu.Url).ToList(),
+                    UserId = t.UserId
+                })
+                .FirstOrDefaultAsync();
+
+        public async Task<IEnumerable<ToyServiceModel>> ByUser(string userId)
+            => await this.data
+                .Toys
+                .AsNoTracking()
+                .Where(t => t.UserId == userId)
+                .OrderByDescending(t => t.CreatedOn)
+                .Select(t => new ToyServiceModel
+                {
+                    Id = t.Id,
+                    Description = t.Description,
+                    ImageUrls = t
+                                    .ImagesUrl
+                                    .Select(t => t.Url)
+                                    .ToList()
+                })
+                .ToListAsync();
+
+        public async Task<Result> Delete(int id, string userId)
+        {
+            var toy = await GetByIdAndUserId(id, userId);
+
+            if (toy is null)
+            {
+                return "There is no toy with the given id";
+            }
+
+            this.data.Toys.Remove(toy);
 
             await this.data.SaveChangesAsync();
 

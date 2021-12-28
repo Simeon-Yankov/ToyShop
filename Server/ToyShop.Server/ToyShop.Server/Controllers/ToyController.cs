@@ -57,15 +57,15 @@ namespace ToyShop.Server.Controllers
         {
             var userId = this.currentUser.GetId();
 
-            var isUpdated = await this.toys.Update(
+            var result = await this.toys.Update(
                 model.Id,
                 model.Description,
                 model.ImagesUrl,
                 userId);
 
-            if (!isUpdated)
+            if (result.Failure)
             {
-                return BadRequest();
+                return BadRequest(result.Error);
             }
 
             return Ok();
@@ -75,11 +75,11 @@ namespace ToyShop.Server.Controllers
         [Route(Id)]
         public async Task<IActionResult> Delete(int id)
         {
-            var isDeleted = await this.toys.DeleteHard(id, this.currentUser.GetId());
+            var result = await this.toys.Delete(id, this.currentUser.GetId());
 
-            if (!isDeleted)
+            if (result.Failure)
             {
-                return BadRequest(NotFoundMessge);
+                return BadRequest(result.Error);
             }
 
             return Ok();
