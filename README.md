@@ -11,3 +11,5 @@ ToyShop is an online shop specific for toys.
 - Identity JWT
 - Swagger
 - React JS
+- HTML && CSS
+- Bootstrap
