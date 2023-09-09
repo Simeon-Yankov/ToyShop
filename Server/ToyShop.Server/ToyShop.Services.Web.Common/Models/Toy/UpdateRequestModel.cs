@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 using static ToyShop.Common.GlobalConstants.Toy;
 
@@ -13,6 +12,6 @@ namespace ToyShop.Server.Models.Toy
         [MaxLength(DescriptionMaxLength)]
         public string Description { get; init; }
 
-        public ICollection<string> ImagesUrl { get; init; }
+        public ICollection<string> ImageUrls { get; init; }
     }
 }

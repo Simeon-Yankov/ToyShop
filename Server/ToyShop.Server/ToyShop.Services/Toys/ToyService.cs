@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 using ToyShop.Data;
 using ToyShop.Models;
+using ToyShop.Server.Models.Toy;
 using ToyShop.Services.Toys.Contracts;
 using ToyShop.Services.Toys.Models;
 
@@ -18,17 +19,17 @@ namespace ToyShop.Services.Toys
         public ToyService(ToyShopDbContext data)
             => this.data = data;
 
-        public async Task<int> Create(string userId, string description, List<string> imagesUrls)
+        public async Task<int> Create(string userId, CreateRequestModel model)
         {
             var imagesUrl = new List<ImageUrl>();
 
-            PopulateListImagesUrls(imagesUrls, imagesUrl);
+            PopulateListImagesUrls(model.ImageUrls, imagesUrl);
 
             var toy = new Toy
             {
-                Description = description,
+                Description = model.Description,
                 ImagesUrl = imagesUrl,
-                UserId = userId
+                UserId = userId,
             };
 
             await this.data.Toys.AddAsync(toy);
@@ -37,19 +38,19 @@ namespace ToyShop.Services.Toys
             return toy.Id;
         }
 
-        public async Task<Result> Update(int id, string description, ICollection<string> urls, string userId)
+        public async Task<Result> Update(string userId, UpdateRequestModel model)
         {
-            var toy = await GetByIdAndUserId(id, userId);
+            var toy = await GetByIdAndUserId(model.Id, userId);
 
             if (toy is null)
             {
                 return "There is no toy with the given id";
             }
 
-            toy.Description = description;
+            toy.Description = model.Description;
             toy.ImagesUrl.Clear();
 
-            foreach (var url in urls)
+            foreach (var url in model.ImageUrls)
             {
                 toy
                     .ImagesUrl

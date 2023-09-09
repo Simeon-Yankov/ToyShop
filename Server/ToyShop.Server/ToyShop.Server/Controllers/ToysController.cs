@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,41 +8,21 @@ using ToyShop.Server.Models.Toy;
 using ToyShop.Services.Toys.Contracts;
 
 using static ToyShop.Server.Infrastructure.WebConstants;
-using static ToyShop.Server.Infrastructure.WebConstants.Toy;
 
 namespace ToyShop.Server.Controllers
 {
-    public class ToyController : ApiController
+    public class ToysController : ApiController
     {
         private readonly IToyService toys;
         private readonly ICurrentUserService currentUser;
 
-        public ToyController(IToyService toys, ICurrentUserService currentUser)
+        public ToysController(IToyService toys, ICurrentUserService currentUser)
         {
             this.toys = toys;
             this.currentUser = currentUser;
         }
 
-        [HttpPost]
-        [Route(nameof(Create))]
-        public async Task<IActionResult> Create(CreateRequestModel model)
-        {
-            var userId = this.currentUser.GetId();
-
-            var toyId = await toys.Create(userId, model.Description, model.ImageUrls);
-
-            return Created(nameof(this.Create), toyId);
-        }
-
-        [HttpGet]
-        [Route(nameof(Details))]
-        public async Task<IActionResult> Details(int id)
-        {
-            var toyDetails = await this.toys.Details(id);
-
-            return toyDetails is null ? NotFound() : Ok(toyDetails);
-        }
-
+        #region Get
         [HttpGet]
         [Route(nameof(Mine))]
         public async Task<IActionResult> Mine()
@@ -51,17 +32,32 @@ namespace ToyShop.Server.Controllers
             return Ok(await this.toys.ByUser(userId));
         }
 
+        [HttpGet]
+        [Route($"{Id}/{nameof(Details)}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var toyDetails = await this.toys.Details(id);
+
+            return toyDetails is null ? NotFound() : Ok(toyDetails);
+        }
+        #endregion
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateRequestModel model)
+        {
+            var userId = this.currentUser.GetId();
+
+            var toyId = await toys.Create(userId, model);
+
+            return Created(nameof(this.Create), toyId);
+        }
+
         [HttpPut]
-        [Route(nameof(Update))]
         public async Task<IActionResult> Update(UpdateRequestModel model)
         {
             var userId = this.currentUser.GetId();
 
-            var result = await this.toys.Update(
-                model.Id,
-                model.Description,
-                model.ImagesUrl,
-                userId);
+            var result = await this.toys.Update(userId, model);
 
             if (result.Failure)
             {

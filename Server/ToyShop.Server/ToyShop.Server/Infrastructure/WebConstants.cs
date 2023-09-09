@@ -3,6 +3,7 @@
     public class WebConstants
     {
         public const string Id = "{id}";
+        public const string Bulk = "{bulk}";
 
         public class Toy
         {
