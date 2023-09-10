@@ -1,5 +1,5 @@
 ﻿using System.Text;
-
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +14,9 @@ using ToyShop.Data;
 using ToyShop.Models;
 using ToyShop.Services.Identity;
 using ToyShop.Services.Identity.Contracts;
+using ToyShop.Services.Logging;
+using ToyShop.Services.Monitoring;
+using ToyShop.Services.Monitoring.Coontracts;
 using ToyShop.Services.Toys;
 using ToyShop.Services.Toys.Contracts;
 
@@ -84,10 +87,17 @@ namespace ToyShop.Server.Infrastructure.Extensions
         }
 
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
-            => services
+        {
+            var kafkaConfig = new ProducerConfig { BootstrapServers = "localhost:9092" };
+
+            return services
                 .AddTransient<IIdentityService, IdentityService>()
                 .AddScoped<ICurrentUserService, CurrentUserService>()
-                .AddTransient<IToyService, ToyService>();
+                .AddTransient<IToyService, ToyService>()
+                .AddSingleton(x => new ProducerBuilder<Null, string>(kafkaConfig).Build())
+                .AddSingleton<IMonitoringProducerService, MonitoringProducerService>()
+                .AddHostedService<MonitoringConsumerService>();
+        }
 
         public static IServiceCollection AddSwagger(this IServiceCollection services)
             => services.AddSwaggerGen(c =>

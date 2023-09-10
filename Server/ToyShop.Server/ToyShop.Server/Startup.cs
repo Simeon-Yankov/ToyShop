@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using ToyShop.Server.Hub;
 using ToyShop.Server.Infrastructure.Extensions;
 using ToyShop.Server.Infrustructure.Extensions;
 
@@ -22,6 +22,7 @@ namespace ToyShop.Server
                 .AddJwtAuthentication(services.GetAppSettings(this.Configuration))
                 .AddApplicationServices()
                 .AddSwagger()
+                .AddSignalRBuilder()
                 .AddControllers();
 
         public void Configure(IApplicationBuilder app)
@@ -38,6 +39,7 @@ namespace ToyShop.Server
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>
                 {
+                    endpoints.MapHub<MonitoringHub>("/monitoringHub");
                     endpoints.MapControllers();
                 });
         }

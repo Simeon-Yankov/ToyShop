@@ -4,7 +4,7 @@
     <UserSecretsId>aspnet-ToyShop.Server-C15CE4A2-0FAA-4CBA-B55F-345AF896BDFE</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Confluent.Kafka" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.21" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.21" />
@@ -14,8 +14,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToyShop.Services\ToyShop.Services.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
   </ItemGroup>
 </Project>
