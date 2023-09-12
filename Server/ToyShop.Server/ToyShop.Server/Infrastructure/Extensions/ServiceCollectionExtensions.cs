@@ -31,6 +31,23 @@ namespace ToyShop.Server.Infrastructure.Extensions
                 .AddDbContext<ToyShopDbContext>(options => options
                     .UseSqlServer(configuration.GetDefaultConnection()));
 
+        public static IServiceCollection AddCorsSchema(this IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options
+                    .AddPolicy(
+                        "AllowAll",
+                        p => p
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials());
+            });
+
+            return services;
+        }
+
         public static IServiceCollection AddIdentity(this IServiceCollection services)
         {
             services

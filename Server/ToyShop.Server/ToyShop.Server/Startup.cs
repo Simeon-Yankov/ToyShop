@@ -26,15 +26,14 @@ namespace ToyShop.Server
                 .AddControllers();
 
         public void Configure(IApplicationBuilder app)
-        {
-            app
+            => app
                 .ApplySwagger()
                 .PrepareDateBase()
-                .UseRouting()
                 .UseCors(options => options
                     .AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader())
+                .UseRouting()
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>
@@ -42,6 +41,5 @@ namespace ToyShop.Server
                     endpoints.MapHub<MonitoringHub>("/monitoringHub");
                     endpoints.MapControllers();
                 });
-        }
     }
 }

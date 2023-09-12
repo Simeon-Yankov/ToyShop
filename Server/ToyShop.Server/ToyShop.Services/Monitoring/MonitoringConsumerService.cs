@@ -32,6 +32,7 @@ namespace ToyShop.Services.Monitoring
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            await Task.Yield();
             using var consumer = new ConsumerBuilder<Ignore, string>(_config).Build();
             consumer.Subscribe("logging-topic");
 
@@ -49,10 +50,10 @@ namespace ToyShop.Services.Monitoring
                 }
                 catch (ConsumeException e)
                 {
-                    Console.WriteLine($"Consume error: {e.Error.Reason}");
+                    Debug.WriteLine($"Consume error: @e", e);
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
             }
 
             consumer.Close();

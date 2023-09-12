@@ -15,7 +15,4 @@
   <ItemGroup>
     <ProjectReference Include="..\ToyShop.Services\ToyShop.Services.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
-  </ItemGroup>
 </Project>
