@@ -11,6 +11,7 @@ using ToyShop.Server.Models.Toy;
 using ToyShop.Services.Monitoring.Coontracts;
 using ToyShop.Services.Toys.Contracts;
 using ToyShop.Services.Toys.Models;
+
 using static ToyShop.Services.Monitoring.Models.MonitoringModels;
 
 namespace ToyShop.Services.Toys
@@ -26,78 +27,59 @@ namespace ToyShop.Services.Toys
             this.monitoringProducer = monitoringProducer;
         }
 
+       
         public async Task<int> Create(string userId, CreateRequestModel model)
         {
-            try
+            var imagesUrl = new List<ImageUrl>();
+
+            PopulateListImagesUrls(model.ImageUrls, imagesUrl);
+
+            var toy = new Toy
             {
-                var imagesUrl = new List<ImageUrl>();
+                Description = model.Description,
+                ImagesUrl = imagesUrl,
+                UserId = userId,
+            };
 
-                PopulateListImagesUrls(model.ImageUrls, imagesUrl);
+            await this.data.Toys.AddAsync(toy);
+            await this.data.SaveChangesAsync();
 
-                var toy = new Toy
-                {
-                    Description = model.Description,
-                    ImagesUrl = imagesUrl,
-                    UserId = userId,
-                };
+            var message = $"Toy with id {toy.Id} was created.";
+            await monitoringProducer
+                    .ProduceAsync(new LogModel(DateTime.Now.ToString(), message));
 
-                await this.data.Toys.AddAsync(toy);
-                await this.data.SaveChangesAsync();
-
-                var message = $"Toy with id {toy.Id} was created.";
-                await monitoringProducer
-                        .ProduceAsync(new LogModel(DateTime.Now.ToString(), message));
-
-                return toy.Id;
-            }
-            catch (System.Exception e)
-            {
-                await monitoringProducer
-                        .ProduceAsync(new AlertModel(DateTime.Now.ToString(), e.Message));
-
-                throw;
-            }
+            return toy.Id;
         }
 
         public async Task<Result> Update(string userId, UpdateRequestModel model)
         {
-            try
+            var toy = await GetByIdAndUserId(model.Id, userId);
+
+            if (toy is null)
             {
-                var toy = await GetByIdAndUserId(model.Id, userId);
-
-                if (toy is null)
-                {
-                    return "There is no toy with the given id";
-                }
-
-                toy.Description = model.Description;
-                toy.ImagesUrl.Clear();
-
-                foreach (var url in model.ImageUrls)
-                {
-                    toy
-                        .ImagesUrl
-                        .Add(new ImageUrl
-                        {
-                            Url = url,
-                        });
-                }
-
-                await this.data.SaveChangesAsync();
-
-                var message = $"Toy with id {toy.Id} was edited.";
-                await monitoringProducer
-                        .ProduceAsync(new LogModel(DateTime.Now.ToString(), message));
-
-                return true;
+                return "There is no toy with the given id";
             }
-            catch (Exception e)
+
+            toy.Description = model.Description;
+            toy.ImagesUrl.Clear();
+
+            foreach (var url in model.ImageUrls)
             {
-                await monitoringProducer
-                        .ProduceAsync(new AlertModel(DateTime.Now.ToString(), e.Message));
-
-                throw;
+                toy
+                    .ImagesUrl
+                    .Add(new ImageUrl
+                    {
+                        Url = url,
+                    });
             }
+
+            await this.data.SaveChangesAsync();
+
+            var message = $"Toy with id {toy.Id} was edited.";
+            await monitoringProducer
+                    .ProduceAsync(new LogModel(DateTime.Now.ToString(), message));
+
+            return true;
         }
 
         public async Task<ToyDetailsServiceModel> Details(int id)
@@ -130,31 +112,22 @@ namespace ToyShop.Services.Toys
 
         public async Task<Result> Delete(int id, string userId)
         {
-            try
+            
+            var toy = await GetByIdAndUserId(id, userId);
+
+            if (toy is null)
             {
-                var toy = await GetByIdAndUserId(id, userId);
-
-                if (toy is null)
-                {
-                    return "There is no toy with the given id";
-                }
-
-                this.data.Toys.Remove(toy);
-                await this.data.SaveChangesAsync();
-
-                var message = $"Toy with id {toy.Id} was deleted.";
-                await monitoringProducer
-                        .ProduceAsync(new LogModel(DateTime.Now.ToString(), message));
-
-                return true;
+                return "There is no toy with the given id";
             }
-            catch (Exception e)
-            {
-                await monitoringProducer
-                        .ProduceAsync(new AlertModel(DateTime.Now.ToString(), e.Message));
 
-                throw;
-            }
+            this.data.Toys.Remove(toy);
+            await this.data.SaveChangesAsync();
+
+            var message = $"Toy with id {toy.Id} was deleted.";
+            await monitoringProducer
+                    .ProduceAsync(new LogModel(DateTime.Now.ToString(), message));
+
+            return true;
         }
 
         #region Private

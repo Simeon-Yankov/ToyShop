@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 
 using ToyShop.Common.Infrastructure.Services.Users.Contracts;
 using ToyShop.Server.Models.Toy;
+using ToyShop.Services;
 using ToyShop.Services.Toys.Contracts;
 
 using static ToyShop.Server.Infrastructure.WebConstants;
@@ -23,6 +25,14 @@ namespace ToyShop.Server.Controllers
         }
 
         #region Get
+        [Obsolete]
+        [HttpGet]
+        [Route(nameof(Error))]
+        public Result Error()
+        {
+            throw new Exception("Error Test in details");
+        }
+
         [HttpGet]
         [Route(nameof(Mine))]
         public async Task<IActionResult> Mine()

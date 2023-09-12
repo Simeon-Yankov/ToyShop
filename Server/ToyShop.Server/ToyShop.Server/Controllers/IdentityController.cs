@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -8,6 +9,8 @@ using Microsoft.Extensions.Options;
 using ToyShop.Models;
 using ToyShop.Server.Models.Identity;
 using ToyShop.Services.Identity.Contracts;
+using ToyShop.Services.Monitoring.Coontracts;
+using ToyShop.Services.Monitoring.Models;
 
 namespace ToyShop.Server.Controllers
 {
@@ -16,15 +19,18 @@ namespace ToyShop.Server.Controllers
         private readonly IIdentityService identity;
         private readonly AppSettings appSettings;
         private readonly UserManager<User> userManager;
+        private readonly IMonitoringProducerService monitoringProducerService;
 
         public IdentityController(
             IIdentityService identity,
             IOptions<AppSettings> appSettings,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IMonitoringProducerService monitoringProducerService)
         {
             this.identity = identity;
             this.appSettings = appSettings.Value;
             this.userManager = userManager;
+            this.monitoringProducerService = monitoringProducerService;
         }
 
         [HttpPost]
@@ -42,6 +48,10 @@ namespace ToyShop.Server.Controllers
 
             if (result.Succeeded)
             {
+                var logMessage = $"User with Email '{user.Email}' has registrated.";
+                await monitoringProducerService
+                        .ProduceAsync(new MonitoringModels.LogModel(DateTime.Now.ToString(), logMessage));
+
                 return Ok();
             }
 
@@ -64,6 +74,10 @@ namespace ToyShop.Server.Controllers
 
             if (!isPasswordValid)
             {
+                var logMessage = $"User with Email '{user.Email}' has logged.";
+                await monitoringProducerService
+                        .ProduceAsync(new MonitoringModels.LogModel(DateTime.Now.ToString(), logMessage));
+
                 return Unauthorized();
             }
 

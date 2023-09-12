@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ToyShop.Server.Hub;
 using ToyShop.Server.Infrastructure.Extensions;
 using ToyShop.Server.Infrustructure.Extensions;
+using ToyShop.Server.Middlewares;
 
 namespace ToyShop.Server
 {
@@ -29,6 +30,7 @@ namespace ToyShop.Server
             => app
                 .ApplySwagger()
                 .PrepareDateBase()
+                .UseMiddleware<ExceptionHandlingMiddleware>()
                 .UseCors(options => options
                     .AllowAnyOrigin()
                     .AllowAnyMethod()

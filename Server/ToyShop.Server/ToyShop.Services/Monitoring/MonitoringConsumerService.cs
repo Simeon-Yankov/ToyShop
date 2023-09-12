@@ -35,6 +35,7 @@ namespace ToyShop.Services.Monitoring
             await Task.Yield();
             using var consumer = new ConsumerBuilder<Ignore, string>(_config).Build();
             consumer.Subscribe("logging-topic");
+            consumer.Subscribe("alert-topic");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -53,7 +54,7 @@ namespace ToyShop.Services.Monitoring
                     Debug.WriteLine($"Consume error: @e", e);
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromMilliseconds(300), stoppingToken);
             }
 
             consumer.Close();
